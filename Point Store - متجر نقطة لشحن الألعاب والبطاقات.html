@@ -1,0 +1,953 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Point Store | متجر نقطة - شحن الألعاب والبطاقات الرقمية</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            purple: '#7c3aed',
+                            purpleDark: '#5b21b6',
+                            cyan: '#06b6d4',
+                            neon: '#00f0ff',
+                            darkBg: '#0b0f19',
+                            cardBg: '#1e293b',
+                            cardHover: '#334155'
+                        }
+                    },
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0b0f19;
+            color: #f8fafc;
+        }
+
+        .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        .glass-modal {
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(124, 58, 237, 0.3);
+        }
+
+        /* Pulse WhatsApp Button */
+        .whatsapp-float {
+            animation: pulse-green 2s infinite;
+        }
+
+        @keyframes pulse-green {
+            0% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { box-shadow: 0 0 0 15px rgba(34, 197, 94, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+
+        /* Animated Gradient Text */
+        .gradient-text {
+            background: linear-gradient(135deg, #00f0ff 0%, #7c3aed 50%, #f43f5e 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0f19;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #7c3aed;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-brand-purple selection:text-white">
+
+    <!-- Header Navigation -->
+    <header class="sticky top-0 z-40 glass-panel border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-20">
+                
+                <!-- Brand Logo -->
+                <div class="flex items-center space-x-3 space-x-reverse cursor-pointer" onclick="filterCategory('all')">
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-brand-purple to-brand-cyan flex items-center justify-center shadow-lg shadow-brand-purple/40">
+                        <i class="fa-solid fa-gamepad text-2xl text-white"></i>
+                    </div>
+                    <div>
+                        <span class="text-2xl font-black tracking-wider text-white">POINT <span class="text-brand-cyan">STORE</span> <span class="text-xs text-brand-purple font-bold bg-brand-purple/20 px-2 py-0.5 rounded-md">(نقطة)</span></span>
+                        <p class="text-xs text-slate-400 font-medium">متجرك الموثوق لشحن الألعاب والخدمات الرقمية</p>
+                    </div>
+                </div>
+
+                <!-- Search Bar (Desktop) -->
+                <div class="hidden md:flex flex-1 max-w-md mx-8">
+                    <div class="relative w-full">
+                        <input type="text" id="searchInput" onkeyup="searchProducts()" placeholder="ابحث عن لعبة (ببجي، فري فاير، GTA VI)..." 
+                            class="w-full bg-slate-900/90 text-sm text-white placeholder-slate-400 rounded-xl py-3 pr-11 pl-4 border border-slate-700/60 focus:outline-none focus:border-brand-purple focus:ring-1 focus:ring-brand-purple transition-all duration-200">
+                        <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Action Controls -->
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <a href="https://wa.me/201202648412" target="_blank" class="flex items-center space-x-2 space-x-reverse bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-bold py-2.5 px-4 rounded-xl text-sm transition-all shadow-md hover:shadow-emerald-500/20">
+                        <i class="fa-brands fa-whatsapp text-lg"></i>
+                        <span class="hidden sm:inline">الدعم واتساب</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Mobile Search Bar -->
+            <div class="pb-4 md:hidden">
+                <div class="relative w-full">
+                    <input type="text" id="mobileSearchInput" onkeyup="searchProductsMobile()" placeholder="ابحث عن لعبة أو بطاقة..." 
+                        class="w-full bg-slate-900 text-sm text-white placeholder-slate-400 rounded-xl py-2.5 pr-10 pl-4 border border-slate-700 focus:outline-none focus:border-brand-purple">
+                    <div class="absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Payment Alert Info Banner -->
+    <section class="bg-gradient-to-r from-slate-900 via-rose-950/40 to-slate-900 border-b border-rose-500/20 py-3">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs sm:text-sm font-bold">
+            <div class="flex items-center space-x-2 space-x-reverse text-rose-400">
+                <i class="fa-solid fa-wallet text-base"></i>
+                <span>رقم تحويل فودافون كاش Vodafone Cash :</span>
+                <span class="bg-slate-900 px-3 py-1 rounded-lg border border-rose-500/40 text-white font-mono tracking-wider">01070166576</span>
+            </div>
+            <div class="flex items-center text-amber-400 space-x-1.5 space-x-reverse">
+                <i class="fa-solid fa-circle-check text-emerald-400"></i>
+                <span>شحن رسمي عبر كاري فريست المباشر بأفضل الأرقام!</span>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Hero Banner -->
+    <section class="relative overflow-hidden pt-6 pb-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="relative rounded-3xl bg-gradient-to-r from-slate-900 via-brand-purpleDark to-slate-900 p-6 sm:p-10 border border-brand-purple/30 overflow-hidden shadow-2xl">
+                <!-- Decorative Elements -->
+                <div class="absolute -top-24 -left-24 w-60 h-60 bg-brand-cyan/20 rounded-full blur-3xl pointer-events-none"></div>
+                <div class="absolute -bottom-24 -right-24 w-60 h-60 bg-brand-purple/30 rounded-full blur-3xl pointer-events-none"></div>
+
+                <div class="relative z-10 max-w-3xl">
+                    <span class="inline-block bg-brand-purple/30 border border-brand-purple/50 text-brand-neon text-xs font-extrabold px-3 py-1 rounded-full mb-3">
+                        ⚡ متجر POINT STORE (نقطة) للشحن السريع
+                    </span>
+                    <h1 class="text-3xl sm:text-5xl font-black tracking-tight text-white leading-tight mb-4">
+                        اشحن العابك المفضل بأفضل الأسعار في <span class="gradient-text">POINT STORE</span>
+                    </h1>
+                    <p class="text-slate-300 text-sm sm:text-base font-medium mb-6">
+                        شحن شدات ببجي، جواهر فري فاير، فورتنايت، موبايل ليجندز، بلوود ستريك، FC Mobile، كول اوف ديوتي، وجميع الألعاب والبرامج والبطاقات الرقمية مع تسليم فوري وتأكيد عبر الواتساب.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Category Filters Section -->
+    <section class="py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-start sm:justify-center space-x-2 space-x-reverse overflow-x-auto pb-2 scrollbar-none">
+                <button onclick="filterCategory('all')" id="btn-all" class="cat-btn active flex items-center space-x-2 space-x-reverse px-5 py-3 rounded-2xl font-bold text-sm whitespace-nowrap transition-all bg-brand-purple text-white shadow-lg shadow-brand-purple/30">
+                    <i class="fa-solid fa-border-all"></i>
+                    <span>الكل</span>
+                </button>
+                <button onclick="filterCategory('games')" id="btn-games" class="cat-btn flex items-center space-x-2 space-x-reverse px-5 py-3 rounded-2xl font-bold text-sm whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700">
+                    <i class="fa-solid fa-gamepad text-brand-cyan"></i>
+                    <span>الألعاب (Games)</span>
+                </button>
+                <button onclick="filterCategory('cards')" id="btn-cards" class="cat-btn flex items-center space-x-2 space-x-reverse px-5 py-3 rounded-2xl font-bold text-sm whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700">
+                    <i class="fa-solid fa-credit-card text-amber-400"></i>
+                    <span>البطاقات الرقمية</span>
+                </button>
+                <button onclick="filterCategory('apps')" id="btn-apps" class="cat-btn flex items-center space-x-2 space-x-reverse px-5 py-3 rounded-2xl font-bold text-sm whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700">
+                    <i class="fa-solid fa-cubes text-emerald-400"></i>
+                    <span>البرامج والاشتراكات</span>
+                </button>
+            </div>
+        </div>
+    </section>
+
+    <!-- Products Grid Section -->
+    <main class="py-6 flex-grow">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <!-- Section Header -->
+            <div class="flex items-center justify-between mb-6">
+                <h2 id="sectionTitle" class="text-xl sm:text-2xl font-extrabold text-white flex items-center">
+                    <span class="w-2 h-7 bg-brand-purple rounded-full ml-3"></span>
+                    جميع الألعاب والمنتجات
+                </h2>
+                <span id="productCount" class="text-xs font-semibold px-3 py-1 bg-slate-800 text-slate-400 rounded-full border border-slate-700">
+                    0 منتج
+                </span>
+            </div>
+
+            <!-- Product Cards Grid -->
+            <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                <!-- Products dynamically inserted via JS -->
+            </div>
+
+            <!-- Empty State Search Result -->
+            <div id="noResults" class="hidden text-center py-16">
+                <div class="w-20 h-20 mx-auto mb-4 rounded-full bg-slate-800 flex items-center justify-center text-slate-500 text-3xl">
+                    <i class="fa-solid fa-magnifying-glass-minus"></i>
+                </div>
+                <h3 class="text-lg font-bold text-white mb-1">لم يتم العثور على أي نتائج</h3>
+                <p class="text-slate-400 text-sm">تأكد من كتابة اسم اللعبة بشكل صحيح أو تواصل معنا عبر الواتساب لتجهيزها فوراً!</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- Interactive Price Modal Popup -->
+    <div id="priceModal" class="fixed inset-0 z-50 hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto transition-opacity duration-300">
+        <div class="glass-modal w-full max-w-2xl rounded-3xl p-6 sm:p-8 relative shadow-2xl transform transition-all scale-95 opacity-0 my-8" id="modalContainer">
+            
+            <!-- Close Button -->
+            <button onclick="closeModal()" class="absolute top-5 left-5 w-10 h-10 rounded-full bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white flex items-center justify-center transition-all">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+
+            <!-- Modal Header Content -->
+            <div class="flex items-center space-x-4 space-x-reverse mb-6 border-b border-slate-800 pb-5">
+                <div id="modalIcon" class="w-16 h-16 rounded-2xl bg-slate-800 flex items-center justify-center text-3xl overflow-hidden p-2 border border-slate-700">
+                    <!-- Icon / Img -->
+                </div>
+                <div>
+                    <span id="modalCategory" class="text-xs font-extrabold text-brand-cyan tracking-wider uppercase">فئة اللعبة</span>
+                    <h3 id="modalTitle" class="text-2xl font-black text-white">اسم المنتج</h3>
+                    <p id="modalSubtitle" class="text-xs text-slate-400">اختر الباقة المناسبة للبدء في الشحن الفوري</p>
+                </div>
+            </div>
+
+            <!-- Bundles List Table / Cards -->
+            <div class="space-y-3 mb-6 max-h-80 overflow-y-auto pr-1" id="bundlesContainer">
+                <!-- Bundles dynamically injected here -->
+            </div>
+
+            <!-- Player ID Input (Optional) -->
+            <div class="mb-5">
+                <label class="block text-xs font-bold text-slate-300 mb-2">أدخل الآيدي (Player ID / Account Name) - اختيارياً:</label>
+                <input type="text" id="playerIDInput" placeholder="مثال: 5123456789" class="w-full bg-slate-900 border border-slate-700 text-white text-sm rounded-xl py-2.5 px-4 focus:outline-none focus:border-brand-purple">
+            </div>
+
+            <!-- Payment & Order Notice -->
+            <div class="bg-slate-900/90 rounded-2xl p-4 border border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div class="flex items-center space-x-3 space-x-reverse">
+                    <div class="w-10 h-10 rounded-xl bg-red-600/20 text-red-500 flex items-center justify-center font-extrabold text-xs">
+                        فودافون<br>كاش
+                    </div>
+                    <div class="text-xs">
+                        <p class="font-bold text-white">رقم الشحن: 01070166576</p>
+                        <p class="text-emerald-400 font-medium">الأسعار المعروضة هي الأسعار النهائية للشحن</p>
+                    </div>
+                </div>
+                <button onclick="directOrder()" class="w-full sm:w-auto bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-600 hover:to-teal-700 text-white font-extrabold px-6 py-3 rounded-xl text-sm transition-all shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2 space-x-reverse">
+                    <i class="fa-brands fa-whatsapp text-lg"></i>
+                    <span>طلب شحن عبر الواتساب</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Floating WhatsApp Action Button -->
+    <a href="https://wa.me/201202648412" target="_blank" class="whatsapp-float fixed bottom-6 right-6 z-50 w-14 h-14 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center text-3xl shadow-2xl transition-all" title="تواصل مع نقطة store عبر الواتساب">
+        <i class="fa-brands fa-whatsapp"></i>
+    </a>
+
+    <!-- Footer -->
+    <footer class="bg-slate-950 border-t border-slate-800/80 py-8 mt-12">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center sm:text-right">
+            <div class="flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-400">
+                <div>
+                    <span class="text-white font-bold text-sm">POINT STORE (متجر نقطة)</span>
+                    <p class="mt-1">جميع الألعاب، البطاقات، والاشتراكات متوفرة بأفضل سعر وفودافون كاش: <span class="text-rose-400 font-bold">01070166576</span></p>
+                </div>
+                <div>
+                    <a href="https://wa.me/201202648412" target="_blank" class="text-emerald-400 font-bold hover:underline flex items-center justify-center sm:justify-end gap-1.5">
+                        <i class="fa-brands fa-whatsapp text-sm"></i>
+                        <span>للتواصل المباشر: 01202648412</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // Exact Data requested by the user (Original prices)
+        const productsData = [
+            // 1. PUBG Mobile
+            {
+                id: 'pubg',
+                title: 'PUBG Mobile UC',
+                arabicTitle: 'شدات ببجي موبايل (PUBG UC)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-crosshairs text-amber-500"></i>',
+                badge: 'أسعار خيالية 🔥',
+                bgGradient: 'from-amber-500/20 to-orange-600/10',
+                bundles: [
+                    { name: '30 UC', price: '26ج' },
+                    { name: '60 UC', price: '52ج' },
+                    { name: '300 UC', price: '255ج' },
+                    { name: '600 UC', price: '515ج' },
+                    { name: '1500 UC', price: '1280ج' },
+                    { name: '3000 UC', price: '2560ج' },
+                    { name: '6000 UC', price: '5150ج' },
+                    { name: '12000 UC', price: '10200ج' },
+                    { name: '18000 UC', price: '15300ج' },
+                    { name: '24000 UC', price: '20300ج' },
+                    { name: '30000 UC', price: '25500ج' },
+                    { name: '36000 UC', price: '30600ج' }
+                ]
+            },
+
+            // 2. Free Fire Bundles
+            {
+                id: 'ff-bundles',
+                title: 'Free Fire Bundles',
+                arabicTitle: 'باقات فري فاير الخاصة',
+                category: 'games',
+                icon: '<i class="fa-solid fa-gift text-rose-400"></i>',
+                badge: 'باقات مميزة 🎁',
+                bgGradient: 'from-rose-500/20 to-pink-600/10',
+                bundles: [
+                    { name: 'باقة 120💎 (مرة واحدة)', price: '25ج' },
+                    { name: '4 باقات 200💎 الواحدة (متعددة)', price: '40ج' },
+                    { name: 'باقة 350💎 (مرة واحدة)', price: '55ج' }
+                ]
+            },
+
+            // 3. Free Fire Diamonds
+            {
+                id: 'ff-diamonds',
+                title: 'Free Fire Diamonds',
+                arabicTitle: 'جواهر فري فاير (Diamonds)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-gem text-cyan-400"></i>',
+                badge: 'شحن ID 💎',
+                bgGradient: 'from-cyan-500/20 to-blue-600/10',
+                bundles: [
+                    { name: '50💎', price: '30ج' },
+                    { name: '100💎', price: '60ج' },
+                    { name: '210💎', price: '115ج' },
+                    { name: '310💎', price: '175ج' },
+                    { name: '520💎', price: '290ج' },
+                    { name: '1060💎', price: '565ج' },
+                    { name: '2120💎', price: '1100ج' }
+                ]
+            },
+
+            // 4. Fortnite
+            {
+                id: 'fortnite',
+                title: 'Fortnite V-Bucks & Gifts',
+                arabicTitle: 'فورتنايت (V-Bucks & Gifts)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-bolt text-purple-400"></i>',
+                badge: 'فورتنايت ⚡',
+                bgGradient: 'from-purple-500/20 to-indigo-600/10',
+                bundles: [
+                    { name: '800 VB', price: '260ج' },
+                    { name: '2400 VB', price: '550ج' },
+                    { name: '4500 VB', price: '880ج' },
+                    { name: '12500 VB', price: '2300ج' },
+                    { name: 'Fortnite Gift (100 VB)', price: '20ج' }
+                ]
+            },
+
+            // Additional Games List requested
+            {
+                id: 'mobile-legends',
+                title: 'Mobile Legends',
+                arabicTitle: 'موبايل ليجندز (Mobile Legends)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-shield-halved text-blue-400"></i>',
+                badge: 'شحن كاري فريست 💎',
+                bgGradient: 'from-blue-500/20 to-indigo-600/10',
+                bundles: [
+                    { name: 'شحن جميع باقات الماس (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'blood-strike',
+                title: 'Blood Strike',
+                arabicTitle: 'بلوود ستريك (Blood Strike)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-gun text-red-500"></i>',
+                badge: 'كاري فريست 🎯',
+                bgGradient: 'from-red-600/20 to-rose-700/10',
+                bundles: [
+                    { name: 'شحن ذهب بلوود ستريك (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'fc-mobile',
+                title: 'EA SPORTS FC Mobile',
+                arabicTitle: 'إف سي موبايل (FC Mobile)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-futbol text-emerald-400"></i>',
+                badge: 'FC Points',
+                bgGradient: 'from-emerald-500/20 to-teal-600/10',
+                bundles: [
+                    { name: 'شحن FC Points (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'cod-mobile',
+                title: 'Call of Duty Mobile',
+                arabicTitle: 'كول اوف ديوتي موبايل (CP)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-person-rifle text-yellow-500"></i>',
+                badge: 'CP شحن',
+                bgGradient: 'from-yellow-500/20 to-amber-600/10',
+                bundles: [
+                    { name: 'شحن كوينز CP (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'genshin-impact',
+                title: 'Genshin Impact',
+                arabicTitle: 'جينشين إمباكت (Genshin Impact)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-wand-magic-sparkles text-sky-400"></i>',
+                badge: 'Genesis Crystals',
+                bgGradient: 'from-sky-500/20 to-blue-600/10',
+                bundles: [
+                    { name: 'شحن كريستال جينشين (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'honor-of-kings',
+                title: 'Honor of Kings',
+                arabicTitle: 'أونر أوف كينجز (Honor of Kings)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-crown text-amber-400"></i>',
+                badge: 'Tokens',
+                bgGradient: 'from-amber-500/20 to-yellow-600/10',
+                bundles: [
+                    { name: 'شحن توكنز Honor of Kings (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'farlight84',
+                title: 'Farlight 84',
+                arabicTitle: 'فارلايت 84 (Farlight 84)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-jet-fighter text-orange-400"></i>',
+                badge: 'Diamonds',
+                bgGradient: 'from-orange-500/20 to-red-600/10',
+                bundles: [
+                    { name: 'شحن جواهر فارلايت (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'yalla-ludo',
+                title: 'Yalla Ludo',
+                arabicTitle: 'يلا لودو (Yalla Ludo)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-dice text-purple-400"></i>',
+                badge: 'جواهر وماس',
+                bgGradient: 'from-purple-500/20 to-pink-600/10',
+                bundles: [
+                    { name: 'شحن جواهر وكوينز يلا لودو (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'arena-breakout',
+                title: 'Arena Breakout',
+                arabicTitle: 'أرينا بريك أوت (Arena Breakout)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-shield-cat text-teal-400"></i>',
+                badge: 'Bonds',
+                bgGradient: 'from-teal-500/20 to-emerald-600/10',
+                bundles: [
+                    { name: 'شحن Bonds أرينا بريك أوت (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'lords-mobile',
+                title: 'Lords Mobile',
+                arabicTitle: 'لوردس موبايل (Lords Mobile)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-chess-knight text-indigo-400"></i>',
+                badge: 'Diamonds / Packs',
+                bgGradient: 'from-indigo-500/20 to-purple-600/10',
+                bundles: [
+                    { name: 'شحن باقات لوردس موبايل (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'marvel-rivals',
+                title: 'Marvel Rivals',
+                arabicTitle: 'مارفل رايفلز (Marvel Rivals)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-mask text-red-500"></i>',
+                badge: 'شحن حصري 🦸',
+                bgGradient: 'from-red-600/20 to-amber-600/10',
+                bundles: [
+                    { name: 'شحن مارفل رايفلز (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'zepeto',
+                title: 'Zepeto',
+                arabicTitle: 'زيبيتو (Zepeto ZEMS)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-user-astronaut text-pink-400"></i>',
+                badge: 'Zems & Coins',
+                bgGradient: 'from-pink-500/20 to-rose-600/10',
+                bundles: [
+                    { name: 'شحن Zems زيبيتو (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'whiteout-survival',
+                title: 'Whiteout Survival',
+                arabicTitle: 'وايت اوت سرفايفل (Whiteout Survival)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-snowflake text-cyan-300"></i>',
+                badge: 'Frost Star',
+                bgGradient: 'from-cyan-400/20 to-blue-600/10',
+                bundles: [
+                    { name: 'شحن Frost Star (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'delta-force',
+                title: 'Delta Force',
+                arabicTitle: 'دلتا فورس (Delta Force)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-crosshairs text-emerald-400"></i>',
+                badge: 'شحن مباشر 🔥',
+                bgGradient: 'from-emerald-500/20 to-green-600/10',
+                bundles: [
+                    { name: 'شحن رصيد دلتا فورس (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'age-of-empires',
+                title: 'Age of Empires Mobile',
+                arabicTitle: 'إيج اوف إمبايرز موبايل',
+                category: 'games',
+                icon: '<i class="fa-solid fa-chess-rook text-yellow-600"></i>',
+                badge: 'جديد 🏰',
+                bgGradient: 'from-yellow-600/20 to-amber-700/10',
+                bundles: [
+                    { name: 'شحن Age of Empires (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'football-dream',
+                title: 'Football Dream',
+                arabicTitle: 'فوتبول دريم (Football Dream)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-futbol text-emerald-400"></i>',
+                badge: 'كرة قدم ⚽',
+                bgGradient: 'from-emerald-600/20 to-teal-700/10',
+                bundles: [
+                    { name: 'شحن كوينز فوتبول دريم (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+            {
+                id: 'ragnarok-origin',
+                title: 'Ragnarok Origin Global',
+                arabicTitle: 'راجناروك اورجين جلوبال',
+                category: 'games',
+                icon: '<i class="fa-solid fa-dragon text-purple-400"></i>',
+                badge: 'Nyan Berry',
+                bgGradient: 'from-purple-600/20 to-indigo-700/10',
+                bundles: [
+                    { name: 'شحن Nyan Berry (Carry1st)', price: 'حسب سعر كاري فريست المباشر' }
+                ]
+            },
+
+            // Pre-Order GTA VI
+            {
+                id: 'gta6',
+                title: 'GTA VI Pre-Order',
+                arabicTitle: 'حجز مسبق GTA VI (قراند 6)',
+                category: 'games',
+                icon: '<i class="fa-solid fa-gamepad text-yellow-400"></i>',
+                badge: 'طلب مسبق 🔥',
+                bgGradient: 'from-yellow-500/20 to-amber-600/10',
+                bundles: [
+                    { name: 'حجز نسخة PlayStation 5', price: 'تواصل لحجز النسخة' },
+                    { name: 'حجز نسخة Xbox Series X/S', price: 'تواصل لحجز النسخة' }
+                ]
+            },
+
+            // Cards Category
+            {
+                id: 'playstation',
+                title: 'PlayStation Cards',
+                arabicTitle: 'بطاقات بلايستيشن (PlayStation)',
+                category: 'cards',
+                icon: '<i class="fa-brands fa-playstation text-blue-500"></i>',
+                badge: 'سعودي / أمريكي',
+                bgGradient: 'from-blue-600/20 to-indigo-700/10',
+                bundles: [
+                    { name: 'بطاقة 10$ متجر أمريكي', price: 'تواصل لمعرفة السعر' },
+                    { name: 'بطاقة 20$ متجر أمريكي', price: 'تواصل لمعرفة السعر' },
+                    { name: 'بطاقة 50$ متجر أمريكي', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'xbox',
+                title: 'Xbox & Game Pass',
+                arabicTitle: 'إكس بوكس وجيم باس (Xbox)',
+                category: 'cards',
+                icon: '<i class="fa-brands fa-xbox text-emerald-500"></i>',
+                badge: 'Game Pass',
+                bgGradient: 'from-emerald-600/20 to-green-700/10',
+                bundles: [
+                    { name: 'Game Pass Ultimate شهر', price: 'تواصل لمعرفة السعر' },
+                    { name: 'بطاقة 10$ Xbox Gift Card', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'googleplay',
+                title: 'Google Play',
+                arabicTitle: 'بطاقات جوجل بلاي (Google Play)',
+                category: 'cards',
+                icon: '<i class="fa-brands fa-google-play text-teal-400"></i>',
+                badge: 'متجر أمريكي',
+                bgGradient: 'from-teal-500/20 to-cyan-600/10',
+                bundles: [
+                    { name: 'بطاقة 5$ متجر أمريكي', price: 'تواصل لمعرفة السعر' },
+                    { name: 'بطاقة 10$ متجر أمريكي', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'steam',
+                title: 'Steam Wallet',
+                arabicTitle: 'بطاقات ستيم (Steam Wallet)',
+                category: 'cards',
+                icon: '<i class="fa-brands fa-steam text-slate-300"></i>',
+                badge: 'شحن محفظة',
+                bgGradient: 'from-slate-600/20 to-slate-800/10',
+                bundles: [
+                    { name: 'بطاقة 5$ Steam Global', price: 'تواصل لمعرفة السعر' },
+                    { name: 'بطاقة 10$ Steam Global', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'itunes',
+                title: 'iTunes Apple Cards',
+                arabicTitle: 'بطاقات آيتيونز وأبل (iTunes)',
+                category: 'cards',
+                icon: '<i class="fa-brands fa-apple text-white"></i>',
+                badge: 'iOS',
+                bgGradient: 'from-slate-400/20 to-slate-600/10',
+                bundles: [
+                    { name: 'بطاقة 10$ iTunes', price: 'تواصل لمعرفة السعر' },
+                    { name: 'بطاقة 15$ iTunes', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+
+            // Apps Category
+            {
+                id: 'chatgpt',
+                title: 'ChatGPT Plus',
+                arabicTitle: 'اشتراك ChatGPT Plus',
+                category: 'apps',
+                icon: '<i class="fa-solid fa-robot text-emerald-400"></i>',
+                badge: 'ذكاء اصطناعي 🤖',
+                bgGradient: 'from-emerald-500/20 to-teal-700/10',
+                bundles: [
+                    { name: 'اشتراك ChatGPT Plus شهر', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'discord',
+                title: 'Discord Nitro',
+                arabicTitle: 'ديسكورد نايترو (Discord Nitro)',
+                category: 'apps',
+                icon: '<i class="fa-brands fa-discord text-indigo-400"></i>',
+                badge: 'Nitro',
+                bgGradient: 'from-indigo-500/20 to-purple-600/10',
+                bundles: [
+                    { name: 'Nitro Full (شهر واحد)', price: 'تواصل لمعرفة السعر' },
+                    { name: 'Nitro Basic (شهر واحد)', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'spotify',
+                title: 'Spotify Premium',
+                arabicTitle: 'اشتراك سبوتيفاي بريميوم',
+                category: 'apps',
+                icon: '<i class="fa-brands fa-spotify text-green-500"></i>',
+                badge: 'بدون إعلانات 🎵',
+                bgGradient: 'from-green-500/20 to-emerald-600/10',
+                bundles: [
+                    { name: 'اشتراك بريميوم 3 شهور', price: 'تواصل لمعرفة السعر' },
+                    { name: 'اشتراك بريميوم سنة', price: 'تواصل لمعرفة السعر' }
+                ]
+            },
+            {
+                id: 'netflix',
+                title: 'Netflix 4K',
+                arabicTitle: 'اشتراك نتفليكس (Netflix 4K)',
+                category: 'apps',
+                icon: '<i class="fa-solid fa-tv text-red-600"></i>',
+                badge: 'أفلام ومسلسلات',
+                bgGradient: 'from-red-600/20 to-rose-700/10',
+                bundles: [
+                    { name: 'بروفايل شاشة واحدة 4K', price: 'تواصل لمعرفة السعر' },
+                    { name: 'حساب كامل 4 شاشات', price: 'تواصل لمعرفة السعر' }
+                ]
+            }
+        ];
+
+        let selectedProduct = null;
+        let selectedBundle = null;
+        let currentCategory = 'all';
+
+        // Render Cards Function
+        function renderProducts(items) {
+            const grid = document.getElementById('productsGrid');
+            const noResults = document.getElementById('noResults');
+            grid.innerHTML = '';
+
+            if (items.length === 0) {
+                noResults.classList.remove('hidden');
+                document.getElementById('productCount').innerText = '0 منتج';
+                return;
+            } else {
+                noResults.classList.add('hidden');
+                document.getElementById('productCount').innerText = items.length + ' منتج';
+            }
+
+            items.forEach(product => {
+                const card = document.createElement('div');
+                card.className = `glass-panel rounded-3xl p-5 flex flex-col justify-between hover:bg-slate-800/80 transition-all duration-300 transform hover:-translate-y-1 border border-slate-800 hover:border-brand-purple/50 group shadow-lg`;
+                
+                card.innerHTML = `
+                    <div>
+                        <!-- Card Header Badge & Icon -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-14 h-14 rounded-2xl bg-gradient-to-br ${product.bgGradient} border border-slate-700 flex items-center justify-center text-2xl group-hover:scale-110 transition-transform">
+                                ${product.icon}
+                            </div>
+                            <span class="text-[11px] font-bold px-3 py-1 rounded-full bg-slate-900/90 text-brand-neon border border-slate-700/80">
+                                ${product.badge}
+                            </span>
+                        </div>
+
+                        <!-- Card Titles -->
+                        <h3 class="text-base sm:text-lg font-black text-white group-hover:text-brand-neon transition-colors mb-1">
+                            ${product.arabicTitle}
+                        </h3>
+                        <p class="text-xs text-slate-400 font-medium mb-4">
+                            ${product.title}
+                        </p>
+                    </div>
+
+                    <!-- Action Button -->
+                    <button onclick="openModal('${product.id}')" class="w-full mt-2 bg-slate-900 hover:bg-brand-purple text-slate-200 hover:text-white font-extrabold py-3 px-4 rounded-2xl text-xs sm:text-sm transition-all duration-200 border border-slate-700 hover:border-brand-purple flex items-center justify-center space-x-2 space-x-reverse group-hover:shadow-lg group-hover:shadow-brand-purple/20">
+                        <i class="fa-solid fa-tags text-brand-cyan group-hover:text-white transition-colors"></i>
+                        <span>عرض قائمة الأسعار والباقات</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Category Filter Function
+        function filterCategory(cat) {
+            currentCategory = cat;
+            
+            // Update Active Buttons UI
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                btn.className = 'cat-btn flex items-center space-x-2 space-x-reverse px-5 py-3 rounded-2xl font-bold text-sm whitespace-nowrap transition-all bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white border border-slate-700';
+            });
+            const activeBtn = document.getElementById(`btn-${cat}`);
+            if (activeBtn) {
+                activeBtn.className = 'cat-btn active flex items-center space-x-2 space-x-reverse px-5 py-3 rounded-2xl font-bold text-sm whitespace-nowrap transition-all bg-brand-purple text-white shadow-lg shadow-brand-purple/30';
+            }
+
+            // Update Title
+            const titleMap = {
+                'all': 'جميع الألعاب والمنتجات',
+                'games': 'ألعاب الفيديو والشحن الفوري',
+                'cards': 'البطاقات الرقمية وبطاقات الهدايا',
+                'apps': 'اشتراكات البرامج والذكاء الاصطناعي'
+            };
+            document.getElementById('sectionTitle').innerHTML = `<span class="w-2 h-7 bg-brand-purple rounded-full ml-3"></span>${titleMap[cat] || 'المنتجات'}`;
+
+            // Filter Data
+            if (cat === 'all') {
+                renderProducts(productsData);
+            } else {
+                const filtered = productsData.filter(p => p.category === cat);
+                renderProducts(filtered);
+            }
+        }
+
+        // Search Filter Logic
+        function searchProducts() {
+            const query = document.getElementById('searchInput').value.toLowerCase().trim();
+            executeSearch(query);
+        }
+
+        function searchProductsMobile() {
+            const query = document.getElementById('mobileSearchInput').value.toLowerCase().trim();
+            executeSearch(query);
+        }
+
+        function executeSearch(query) {
+            let filtered = productsData;
+            if (currentCategory !== 'all') {
+                filtered = filtered.filter(p => p.category === currentCategory);
+            }
+
+            if (query !== '') {
+                filtered = filtered.filter(p => 
+                    p.title.toLowerCase().includes(query) || 
+                    p.arabicTitle.toLowerCase().includes(query)
+                );
+            }
+            renderProducts(filtered);
+        }
+
+        // Modal Open Logic
+        function openModal(productId) {
+            const product = productsData.find(p => p.id === productId);
+            if (!product) return;
+
+            selectedProduct = product;
+            selectedBundle = product.bundles[0]; // Select first by default
+
+            document.getElementById('modalIcon').innerHTML = product.icon;
+            document.getElementById('modalTitle').innerText = product.arabicTitle;
+            document.getElementById('modalSubtitle').innerText = `${product.title} - اختر الباقة المطلوب إرسالها`;
+            
+            const categoryNames = {
+                'games': 'قسم الألعاب الرقمية',
+                'cards': 'قسم البطاقات الرقمية',
+                'apps': 'قسم البرامج والاشتراكات'
+            };
+            document.getElementById('modalCategory').innerText = categoryNames[product.category] || 'منتج مميز';
+
+            // Populate Bundles Container
+            const bundlesContainer = document.getElementById('bundlesContainer');
+            bundlesContainer.innerHTML = '';
+
+            product.bundles.forEach((b, index) => {
+                const bundleCard = document.createElement('div');
+                bundleCard.className = `p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between ${index === 0 ? 'bg-brand-purple/20 border-brand-purple text-white shadow-md' : 'bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700'}`;
+                bundleCard.onclick = () => selectBundleUI(bundleCard, b);
+
+                bundleCard.innerHTML = `
+                    <div class="flex items-center space-x-3 space-x-reverse">
+                        <div class="w-5 h-5 rounded-full border-2 flex items-center justify-center ${index === 0 ? 'border-brand-neon bg-brand-purple' : 'border-slate-600'} modal-radio">
+                            <div class="w-2 h-2 rounded-full bg-white ${index === 0 ? 'block' : 'hidden'}"></div>
+                        </div>
+                        <span class="font-bold text-sm sm:text-base">${b.name}</span>
+                    </div>
+                    <div class="font-black text-brand-neon text-sm sm:text-base">
+                        ${b.price}
+                    </div>
+                `;
+                bundlesContainer.appendChild(bundleCard);
+            });
+
+            // Set initial bundle price for the order
+            selectedBundle = product.bundles[0];
+
+            // Show Modal
+            const modal = document.getElementById('priceModal');
+            const container = document.getElementById('modalContainer');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                container.classList.remove('scale-95', 'opacity-0');
+                container.classList.add('scale-100', 'opacity-100');
+            }, 10);
+        }
+
+        function selectBundleUI(element, bundle) {
+            selectedBundle = bundle;
+
+            const allBundles = document.getElementById('bundlesContainer').children;
+            for (let child of allBundles) {
+                child.className = 'p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between bg-slate-900/80 border-slate-800 text-slate-300 hover:border-slate-700';
+                const radio = child.querySelector('.modal-radio');
+                radio.className = 'w-5 h-5 rounded-full border-2 border-slate-600 flex items-center justify-center modal-radio';
+                radio.querySelector('div').className = 'w-2 h-2 rounded-full bg-white hidden';
+            }
+
+            element.className = 'p-4 rounded-2xl border transition-all cursor-pointer flex items-center justify-between bg-brand-purple/20 border-brand-purple text-white shadow-md';
+            const activeRadio = element.querySelector('.modal-radio');
+            activeRadio.className = 'w-5 h-5 rounded-full border-2 border-brand-neon bg-brand-purple flex items-center justify-center modal-radio';
+            activeRadio.querySelector('div').className = 'w-2 h-2 rounded-full bg-white block';
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('priceModal');
+            const container = document.getElementById('modalContainer');
+            container.classList.remove('scale-100', 'opacity-100');
+            container.classList.add('scale-95', 'opacity-0');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Send Order to WhatsApp Phone 01202648412
+        function directOrder() {
+            if (!selectedProduct || !selectedBundle) return;
+
+            const playerID = document.getElementById('playerIDInput').value.trim();
+            const playerIDText = playerID ? `%0A🆔 **الآيدي / الحساب:** ${playerID}` : '';
+
+            const message = `مرحباً Point Store (نقطة) 👋%0Aأرغب في طلب شحن:%0A🎮 **المنتج:** ${selectedProduct.arabicTitle}%0A📦 **الباقة:** ${selectedBundle.name}%0A💰 **السعر:** ${selectedBundle.price}${playerIDText}%0A💳 **رقم التحويل فودافون كاش:** 01070166576%0A%0Aيرجى تأكيد الطلب وتزويدي بالتفاصيل!`;
+            
+            // Directed to exact WhatsApp requested: 01202648412
+            const whatsappUrl = `https://wa.me/201202648412?text=${message}`;
+            window.open(whatsappUrl, '_blank');
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('priceModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+
+        // Initialize App
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts(productsData);
+        });
+    </script>
+</body>
+</html>
